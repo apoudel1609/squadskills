@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squad · Skills Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0b0e14;
+      --bg2:      #12171f;
+      --bg3:      #1a2030;
+      --border:   #222a38;
+      --border2:  #2e3a4e;
+      --text:     #d8e4f0;
+      --dim:      #5a6a80;
+      --amber:    #f0a030;
+      --amber-lo: #f0a03020;
+      --teal:     #00c8a8;
+      --teal-lo:  #00c8a815;
+      --violet:   #9b7ff4;
+      --red:      #f05060;
+      --green:    #30c880;
+      --display:  'Syne', sans-serif;
+      --mono:     'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+
+    .brand {
+      font-family: var(--display);
+      font-weight: 800; font-size: 1.25rem;
+      letter-spacing: -0.03em;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .brand-dot { color: var(--amber); }
+    .brand-sub {
+      font-family: var(--mono);
+      font-size: .7rem; font-weight: 400;
+      color: var(--dim);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-left: .25rem;
+    }
+
+    .header-actions { display: flex; align-items: center; gap: .75rem; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .3rem .85rem;
+      border-radius: 50px;
+      font-family: var(--mono); font-size: .7rem;
+      cursor: pointer; transition: all .15s;
+      border: 1px solid transparent;
+      text-transform: uppercase; letter-spacing: .08em;
+      font-weight: 500;
+    }
+    .pill-outline {
+      border-color: var(--border2); color: var(--dim);
+      background: transparent;
+    }
+    .pill-outline:hover { border-color: var(--amber); color: var(--amber); }
+    .pill-amber { background: var(--amber); color: #0b0e14; border-color: var(--amber); }
+    .pill-amber:hover { filter: brightness(1.1); }
+    .pill-teal { background: var(--teal-lo); color: var(--teal); border-color: var(--teal); }
+
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── TABS ───────────────────────────────────── */
+    .tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 0 2rem;
+    }
+    .tab {
+      padding: .85rem 1.4rem;
+      font-family: var(--display); font-weight: 600; font-size: .8rem;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--dim); cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+    /* ── LAYOUT ─────────────────────────────────── */
+    .page { display: none; padding: 2rem; max-width: 1300px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    h2 {
+      font-family: var(--display); font-weight: 800; font-size: 1.6rem;
+      letter-spacing: -.03em; margin-bottom: .3rem;
+    }
+    h3 {
+      font-family: var(--display); font-weight: 700; font-size: 1rem;
+      letter-spacing: -.01em;
+    }
+
+    .section-label {
+      font-size: .65rem; text-transform: uppercase; letter-spacing: .15em;
+      color: var(--dim); margin-bottom: 1.2rem;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    /* ── PROFILE PAGE ───────────────────────────── */
+    .profile-grid {
+      display: grid; grid-template-columns: 280px 1fr;
+      gap: 1.5rem; align-items: start;
+    }
+
+    .name-picker-card { position: sticky; top: 80px; }
+    .name-picker-card h3 { margin-bottom: 1rem; }
+
+    .member-btn {
+      display: flex; align-items: center; gap: .75rem;
+      width: 100%; padding: .75rem 1rem;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: var(--mono); font-size: .8rem;
+      cursor: pointer; margin-bottom: .5rem;
+      transition: all .15s; text-align: left;
+    }
+    .member-btn:hover { border-color: var(--border2); background: var(--bg3); }
+    .member-btn.selected { border-color: var(--amber); background: var(--amber-lo); color: var(--amber); }
+    .member-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--display); font-weight: 700; font-size: .85rem;
+      flex-shrink: 0;
+    }
+    .member-role { font-size: .65rem; color: var(--dim); display: block; margin-top: .1rem; }
+    .member-btn.selected .member-role { color: var(--amber); opacity: .7; }
+
+    .skills-form-card { }
+
+    .cat-block { margin-bottom: 2rem; }
+    .cat-header {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-icon { font-size: 1.1rem; }
+    .cat-name { font-family: var(--display); font-weight: 700; font-size: .9rem; }
+    .cat-count { font-size: .65rem; color: var(--dim); margin-left: auto; letter-spacing: .1em; }
+
+    .skill-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .55rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .skill-row:last-child { border-bottom: none; }
+    .skill-name { font-size: .8rem; color: var(--text); flex: 1; }
+
+    .dot-row { display: flex; gap: 5px; align-items: center; }
+    .dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--border2);
+      background: transparent;
+      cursor: pointer; transition: all .12s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dot:hover { border-color: var(--amber); }
+    .dot.filled { border-color: transparent; }
+    .dot.filled[data-lv="1"] { background: #4a3520; }
+    .dot.filled[data-lv="2"] { background: #4a4020; }
+    .dot.filled[data-lv="3"] { background: #204a38; }
+    .dot.filled[data-lv="4"] { background: #204048; }
+    .dot.filled[data-lv="5"] { background: #382048; }
+
+    .dot[data-lv="1"].active { background: #c8682a; border-color: #c8682a; box-shadow: 0 0 8px #c8682a60; }
+    .dot[data-lv="2"].active { background: #c8a828; border-color: #c8a828; box-shadow: 0 0 8px #c8a82860; }
+    .dot[data-lv="3"].active { background: #28c878; border-color: #28c878; box-shadow: 0 0 8px #28c87860; }
+    .dot[data-lv="4"].active { background: #28a8c8; border-color: #28a8c8; box-shadow: 0 0 8px #28a8c860; }
+    .dot[data-lv="5"].active { background: #9858e8; border-color: #9858e8; box-shadow: 0 0 8px #9858e860; }
+
+    .prof-label { font-size: .65rem; color: var(--dim); width: 62px; text-align: right; }
+
+    /* Availability section */
+    .avail-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .field-group { margin-bottom: 0; }
+    .field-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); margin-bottom: .5rem; display: block; }
+    .field-select, .field-input, .field-textarea {
+      width: 100%; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); font-family: var(--mono); font-size: .8rem;
+      padding: .6rem .85rem; outline: none;
+      transition: border-color .15s;
+    }
+    .field-select:focus, .field-input:focus, .field-textarea:focus { border-color: var(--amber); }
+    .field-textarea { resize: vertical; min-height: 80px; }
+
+    .hours-display {
+      font-family: var(--display); font-weight: 700; font-size: 1.6rem;
+      color: var(--amber);
+    }
+    input[type=range] {
+      -webkit-appearance: none; width: 100%; height: 4px;
+      background: var(--border2); border-radius: 2px; outline: none; margin-top: .5rem;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--amber); cursor: pointer; box-shadow: 0 0 8px #f0a03060;
+    }
+
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .25rem; }
+    .check-pill {
+      padding: .3rem .7rem; border-radius: 50px;
+      border: 1px solid var(--border2); color: var(--dim);
+      font-size: .7rem; cursor: pointer; transition: all .12s; user-select: none;
+    }
+    .check-pill.on { border-color: var(--teal); color: var(--teal); background: var(--teal-lo); }
+
+    .save-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; margin-top: 1.5rem;
+    }
+    .save-status { font-size: .75rem; color: var(--dim); display: flex; align-items: center; gap: .5rem; }
+    .save-status.ok { color: var(--green); }
+    .save-status.err { color: var(--red); }
+
+    /* ── MATRIX PAGE ─────────────────────────────── */
+    .matrix-controls {
+      display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+    }
+    .cat-filter {
+      padding: .35rem .85rem; border-radius: 50px; font-size: .7rem;
+      border: 1px solid var(--border2); color: var(--dim);
+      cursor: pointer; transition: all .12s; font-family: var(--mono);
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+    .cat-filter:hover { color: var(--text); }
+    .cat-filter.on { border-color: var(--amber); color: var(--amber); background: var(--amber-lo); }
+
+    .matrix-wrap { overflow-x: auto; }
+    .matrix-table {
+      border-collapse: collapse; min-width: 100%;
+    }
+    .matrix-table th, .matrix-table td {
+      padding: 0; border: 1px solid var(--border);
+    }
+    .matrix-table thead th {
+      background: var(--bg2);
+      font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--dim); font-weight: 500; white-space: nowrap;
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      padding: .75rem .4rem;
+      min-width: 36px;
+    }
+    .matrix-table thead th.cat-head {
+      writing-mode: initial;
+      transform: none;
+      color: var(--amber);
+      text-align: left;
+      padding: .5rem .75rem;
+      font-family: var(--display); font-weight: 700;
+      font-size: .7rem; letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .matrix-table tbody tr:hover td { filter: brightness(1.2); }
+    .member-th {
+      background: var(--bg2); padding: .6rem 1rem !important;
+      font-size: .75rem; color: var(--text); font-weight: 500;
+      white-space: nowrap; writing-mode: initial !important;
+      transform: none !important; text-align: left;
+    }
+    .matrix-cell {
+      width: 36px; height: 32px;
+      text-align: center; vertical-align: middle;
+      cursor: default;
+      font-size: .65rem; font-weight: 600;
+      transition: filter .1s;
+    }
+    .matrix-cell[data-v="0"] { background: var(--bg); color: var(--border); }
+    .matrix-cell[data-v="1"] { background: #2a1a0a; color: #c8682a; }
+    .matrix-cell[data-v="2"] { background: #2a2808; color: #c8a828; }
+    .matrix-cell[data-v="3"] { background: #082818; color: #28c878; }
+    .matrix-cell[data-v="4"] { background: #082028; color: #28a8c8; }
+    .matrix-cell[data-v="5"] { background: #180838; color: #9858e8; }
+
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .legend-item { display: flex; align-items: center; gap: .4rem; font-size: .7rem; color: var(--dim); }
+    .legend-box { width: 14px; height: 14px; border-radius: 3px; }
+
+    /* ── OPPORTUNITY PAGE ────────────────────────── */
+    .opp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+    .strength-bar-wrap { margin-bottom: .85rem; }
+    .strength-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: .75rem; margin-bottom: .3rem;
+    }
+    .strength-bar-bg {
+      height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .strength-bar-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--amber));
+      transition: width .6s ease;
+    }
+
+    .idea-card {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 10px; padding: 1.25rem;
+      margin-bottom: .85rem;
+    }
+    .idea-title {
+      font-family: var(--display); font-weight: 700; font-size: .95rem;
+      margin-bottom: .35rem;
+    }
+    .idea-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .6rem; }
+    .idea-tag {
+      padding: .2rem .55rem; border-radius: 50px; font-size: .65rem;
+      background: var(--bg2); border: 1px solid var(--border2); color: var(--dim);
+    }
+    .idea-fit {
+      font-size: .7rem; margin-top: .5rem; color: var(--dim);
+    }
+    .idea-fit strong { color: var(--green); }
+
+    /* ── SETUP MODAL ─────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: #00000090;
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: 16px; padding: 2rem; width: 480px; max-width: 95vw;
+    }
+    .modal h2 { font-size: 1.2rem; margin-bottom: .3rem; }
+    .modal p { font-size: .78rem; color: var(--dim); margin-bottom: 1.5rem; line-height: 1.7; }
+    .modal .field-group { margin-bottom: 1rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .setup-steps {
+      display: flex; gap: .5rem; margin-bottom: 1.5rem;
+    }
+    .setup-step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border2); transition: background .2s;
+    }
+    .setup-step-dot.done { background: var(--amber); }
+
+    /* ── TOAST ───────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 2000;
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: 10px; padding: .85rem 1.25rem;
+      font-size: .78rem; opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { border-color: var(--green); color: var(--green); }
+    #toast.error { border-color: var(--red); color: var(--red); }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--dim); font-size: .85rem; line-height: 2;
+    }
+    .empty .em { font-family: var(--display); font-size: 2rem; display: block; margin-bottom: .5rem; }
+
+    /* ── UTIL ────────────────────────────────────── */
+    .flex { display: flex; }
+    .gap-sm { gap: .5rem; }
+    .mt { margin-top: 1.5rem; }
+    .mb { margin-bottom: 1.5rem; }
+    .full { grid-column: 1 / -1; }
+
+    @media (max-width: 768px) {
+      .profile-grid { grid-template-columns: 1fr; }
+      .name-picker-card { position: static; }
+      .avail-grid { grid-template-columns: 1fr; }
+      .opp-grid { grid-template-columns: 1fr; }
+      header { padding: 0 1rem; }
+      .page { padding: 1rem; }
+      .tabs { padding: 0 1rem; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  SETUP MODAL                                    -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <div class="setup-steps" id="setupDots"></div>
+    <h2>⚡ Squad Setup</h2>
+    <p id="setupDesc"></p>
+
+    <!-- Step 1: JSONBin -->
+    <div class="step" id="step1">
+      <p style="margin-bottom:1rem">
+        This app stores data on <strong style="color:var(--amber)">JSONBin.io</strong> — free JSON cloud storage.
+        One person does this setup and shares the credentials with the group.<br><br>
+        <strong>Setup (2 min):</strong><br>
+        1. Go to <a href="https://jsonbin.io" target="_blank" style="color:var(--teal)">jsonbin.io</a> → Sign up free<br>
+        2. Click <strong>Create a Bin</strong> → paste the JSON below into the content field:<br>
+      </p>
+      <div style="position:relative;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem;font-size:.72rem;line-height:1.6;color:var(--teal);font-family:var(--mono);word-break:break-all">
+        {"squad":"skills-matrix","members":{}}
+        <button onclick="copyInit()" style="position:absolute;top:.5rem;right:.5rem;background:var(--border2);border:none;border-radius:4px;color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:.25rem .5rem;cursor:pointer" id="copyBtn">copy</button>
+      </div>
+      <p style="margin-bottom:.75rem">
+        3. Hit <strong>Save</strong> → copy the <strong>Bin ID</strong> from the URL or sidebar<br>
+        4. Go to <strong>API Keys</strong> → copy your <strong>Master Key</strong><br>
+        5. Paste both below and share with the squad
+      </p>
+      <div class="field-group">
+        <label class="field-label">JSONBin Bin ID</label>
+        <input class="field-input" id="cfgBinId" placeholder="e.g. 65f1a2b3c4d5e6f7a8b9c0d1" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">JSONBin Master Key</label>
+        <input class="field-input" id="cfgApiKey" placeholder="$2b$10$..." type="password" />
+      </div>
+    </div>
+
+    <!-- Step 2: Your name -->
+    <div class="step" id="step2">
+      <p>Who are you? Pick your name so your profile is linked correctly.</p>
+      <div class="field-group">
+        <label class="field-label">Your Name</label>
+        <select class="field-select" id="cfgMyName">
+          <option value="">— Select —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="pill pill-outline" onclick="setupBack()" id="setupBackBtn">Back</button>
+      <button class="pill pill-amber" onclick="setupNext()" id="setupNextBtn">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  HEADER                                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<header>
+  <div class="brand">
+    Squad<span class="brand-dot">.</span>
+    <span class="brand-sub">Skills Matrix</span>
+  </div>
+  <div class="header-actions">
+    <span id="activeUser" class="pill pill-teal" style="display:none"></span>
+    <span class="pill pill-outline" onclick="openSetup()">⚙ Config</span>
+    <button class="pill pill-amber" onclick="syncData()">↻ Sync</button>
+    <span class="status-dot" id="statusDot" style="background:var(--dim);box-shadow:none"></span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TABS                                           -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('profile')">My Profile</div>
+  <div class="tab" onclick="showTab('matrix')">Skills Matrix</div>
+  <div class="tab" onclick="showTab('opportunity')">Opportunity Analysis</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  PAGE: MY PROFILE                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page active" id="pg-profile">
+
+  <div style="margin-bottom:1.5rem; padding-top:.5rem">
+    <h2>My Profile</h2>
+    <div class="section-label">Rate your skills · Select your name to begin</div>
+  </div>
+
+  <div class="profile-grid">
+
+    <!-- LEFT: Name picker -->
+    <div>
+      <div class="card name-picker-card">
+        <h3 style="margin-bottom:1rem">Who are you?</h3>
+        <div id="memberBtns"></div>
+
+        <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border)">
+          <div class="section-label" style="margin-bottom:.6rem">Proficiency Key</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.72rem">
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="width:14px;height:14px;border-radius:3px;background:#2a1a0a;display:inline-block"></span><span style="color:#c8682a">1 · Beginner</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="width:14px;height:14px;border-radius:3px;background:#2a2808;display:inline-block"></span><span style="color:#c8a828">2 · Familiar</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="width:14px;height:14px;border-radius:3px;background:#082818;display:inline-block"></span><span style="color:#28c878">3 · Proficient</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="width:14px;height:14px;border-radius:3px;background:#082028;display:inline-block"></span><span style="color:#28a8c8">4 · Advanced</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="width:14px;height:14px;border-radius:3px;background:#180838;display:inline-block"></span><span style="color:#9858e8">5 · Expert</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Skills form -->
+    <div id="skillsPanel">
+      <div class="empty">
+        <span class="em">👈</span>
+        Select your name on the left to load your skills profile.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  PAGE: SKILLS MATRIX                            -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page" id="pg-matrix">
+  <div style="margin-bottom:1.5rem; padding-top:.5rem">
+    <h2>Skills Matrix</h2>
+    <div class="section-label">Collective snapshot — all members, all skills</div>
+  </div>
+
+  <div class="matrix-controls" id="matrixFilters"></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background:#2a1a0a;border:1px solid #c8682a"></div>Beginner</div>
+    <div class="legend-item"><div class="legend-box" style="background:#2a2808;border:1px solid #c8a828"></div>Familiar</div>
+    <div class="legend-item"><div class="legend-box" style="background:#082818;border:1px solid #28c878"></div>Proficient</div>
+    <div class="legend-item"><div class="legend-box" style="background:#082028;border:1px solid #28a8c8"></div>Advanced</div>
+    <div class="legend-item"><div class="legend-box" style="background:#180838;border:1px solid #9858e8"></div>Expert</div>
+  </div>
+
+  <div class="matrix-wrap card" style="padding:.5rem">
+    <div id="matrixContainer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  PAGE: OPPORTUNITY ANALYSIS                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page" id="pg-opportunity">
+  <div style="margin-bottom:1.5rem; padding-top:.5rem">
+    <h2>Opportunity Analysis</h2>
+    <div class="section-label">What the squad can build together</div>
+  </div>
+
+  <div id="oppContent">
+    <div class="empty">
+      <span class="em">📡</span>
+      Sync data first, then complete at least 2 profiles to see analysis.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TOAST                                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<script>
+
+// ─── CONFIG ──────────────────────────────────────
+const MEMBERS = [
+  { name: "Anupam", role: "Network / Telecom Engineer",  initials: "AN", color: "#f0a030" },
+  { name: "Bibek",  role: "QA Analyst",                  initials: "BI", color: "#00c8a8" },
+  { name: "Adhip",  role: "QA Business Analyst",         initials: "AD", color: "#9b7ff4" },
+  { name: "Rasil",  role: "Cloud Network Engineer",      initials: "RA", color: "#28c878" },
+  { name: "Krishna",role: "Mechanical Engineer (O&G)",   initials: "KR", color: "#28a8c8" },
+  { name: "Rabin",  role: "Sr Mechanical Engineer (O&G)",initials: "RB", color: "#f05060" },
+];
+
+const SKILL_CATS = {
+  "💻 Technical": [
+    "Network Engineering","Cloud Infrastructure","Telecom / RF",
+    "Software Development","Web Development","Mobile Development",
+    "DevOps / CI-CD","Cybersecurity","QA Automation","Data / Analytics",
+    "Database / SQL","AI / ML"
+  ],
+  "⚙️ Engineering": [
+    "Mechanical Design","CAD / 3D Modeling","Electrical Systems",
+    "Process Engineering","Systems Integration","Structural Analysis"
+  ],
+  "📊 Business": [
+    "Project Management","Product Management","Business Analysis",
+    "Sales / Biz Dev","Marketing","Financial Modeling",
+    "Operations","UI/UX Design","Technical Writing","Legal / Contracts"
+  ],
+  "🏭 Industry": [
+    "Oil & Gas","Telecommunications","Cloud / SaaS","Enterprise IT",
+    "E-commerce","Healthcare","Finance / Fintech","Manufacturing",
+    "Real Estate","Energy / Utilities"
+  ],
+};
+
+const ALL_SKILLS = Object.values(SKILL_CATS).flat();
+
+const INTEREST_OPTS = [
+  "SaaS Product","Consulting / Services","Mobile App",
+  "Physical Product","Platform / Marketplace","Real Estate / Proptech",
+  "Energy Tech","Industrial IoT","Other"
+];
+
+const ROLE_OPTS = [
+  "Technical Lead","Business Dev","Product / Strategy",
+  "Operations","Design","Investor / Advisor","Flexible"
+];
+
+// ─── STATE ────────────────────────────────────────
+let cfg   = {};          // { binId, apiKey, myName }
+let db    = {};          // { Anupam: { skills: {}, avail: {} }, ... }
+let myName = null;
+let setupStep = 1;
+let matrixFilter = "all";
+
+// ─── INIT ─────────────────────────────────────────
+window.onload = () => {
+  cfg = JSON.parse(localStorage.getItem("squadCfg") || "{}");
+  db  = JSON.parse(localStorage.getItem("squadDB")  || "{}");
+
+  renderMemberBtns();
+  populateSetupMembers();
+  renderMatrixFilters();
+
+  if (!cfg.binId || !cfg.apiKey || !cfg.myName) {
+    openSetup();
+  } else {
+    myName = cfg.myName;
+    updateActiveUserBadge();
+    syncData();
+  }
+};
+
+// ─── TABS ─────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const ids = ['profile','matrix','opportunity'];
+    t.classList.toggle('active', ids[i] === id);
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  if (id === 'matrix')      renderMatrix();
+  if (id === 'opportunity') renderOpportunity();
+}
+
+// ─── MEMBER BUTTONS ───────────────────────────────
+function renderMemberBtns() {
+  const wrap = document.getElementById('memberBtns');
+  wrap.innerHTML = MEMBERS.map(m => `
+    <button class="member-btn ${myName===m.name?'selected':''}" onclick="selectMember('${m.name}')">
+      <div class="member-avatar" style="background:${m.color}22;color:${m.color}">${m.initials}</div>
+      <div>
+        <div>${m.name}</div>
+        <span class="member-role">${m.role}</span>
+      </div>
+    </button>
+  `).join('');
+}
+
+function selectMember(name) {
+  myName = name;
+  renderMemberBtns();
+  renderSkillsForm();
+}
+
+// ─── SKILLS FORM ──────────────────────────────────
+function renderSkillsForm() {
+  if (!myName) return;
+  const panel = document.getElementById('skillsPanel');
+  const mdata = db[myName] || {};
+  const skills = mdata.skills || {};
+  const avail  = mdata.avail  || {};
+
+  let html = `<div class="card skills-form-card">`;
+
+  // Categories
+  for (const [cat, list] of Object.entries(SKILL_CATS)) {
+    html += `
+      <div class="cat-block">
+        <div class="cat-header">
+          <span class="cat-icon">${cat.split(' ')[0]}</span>
+          <span class="cat-name">${cat.split(' ').slice(1).join(' ')}</span>
+          <span class="cat-count">${list.length} skills</span>
+        </div>
+    `;
+    list.forEach(skill => {
+      const v = skills[skill] || 0;
+      const labels = ["","Beginner","Familiar","Proficient","Advanced","Expert"];
+      html += `
+        <div class="skill-row">
+          <span class="skill-name">${skill}</span>
+          <div class="dot-row" data-skill="${skill}">
+            ${[1,2,3,4,5].map(i => `
+              <div class="dot ${i<=v?'filled active':i<=v?'filled':''} ${i<=v?'active':''}"
+                   data-lv="${i}"
+                   onclick="setSkill('${skill}',${i})"
+                   title="${labels[i]}">
+              </div>
+            `).join('')}
+          </div>
+          <span class="prof-label" id="lbl-${skill.replace(/[^a-z0-9]/gi,'_')}">${v>0?labels[v]:''}</span>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  // Availability
+  const hrs = avail.hours || 5;
+  html += `
+    </div>
+    <div class="card mt" id="availCard">
+      <h3 style="margin-bottom:1.25rem">Availability & Interests</h3>
+      <div class="avail-grid">
+        <div class="field-group">
+          <label class="field-label">Hours / week available for side project</label>
+          <div class="hours-display" id="hrsDisplay">${hrs}</div>
+          <input type="range" min="1" max="40" value="${hrs}" id="hrsSlider"
+                 oninput="document.getElementById('hrsDisplay').textContent=this.value" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Preferred role in a venture</label>
+          <select class="field-select" id="roleSelect">
+            <option value="">— Select —</option>
+            ${ROLE_OPTS.map(r => `<option ${avail.role===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Open to investing capital?</label>
+          <select class="field-select" id="investSelect">
+            <option value="">— Select —</option>
+            ${["Yes","Maybe","No — time only"].map(o => `<option ${avail.invest===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Earliest availability to start</label>
+          <select class="field-select" id="startSelect">
+            <option value="">— Select —</option>
+            ${["Immediately","1-3 months","3-6 months","6-12 months","12+ months"]
+              .map(o => `<option ${avail.start===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="field-group full">
+          <label class="field-label">Project / venture interests (select all that apply)</label>
+          <div class="checkbox-group" id="interestPills">
+            ${INTEREST_OPTS.map(o => `
+              <div class="check-pill ${(avail.interests||[]).includes(o)?'on':''}"
+                   onclick="toggleInterest(this,'${o}')">${o}</div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="field-group full">
+          <label class="field-label">Your goals & context (optional — what are you hoping to build?)</label>
+          <textarea class="field-textarea" id="bioText" rows="3" placeholder="e.g. I want to productize my oil & gas domain expertise into an IoT monitoring SaaS...">${avail.bio||''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Save bar
+  html += `
+    <div class="save-bar">
+      <span class="save-status" id="saveStatus">✦ Fill out your skills and hit Save</span>
+      <button class="pill pill-amber" onclick="saveProfile()">Save Profile →</button>
+    </div>
+  `;
+
+  panel.innerHTML = html;
+
+  // Re-apply filled dots correctly
+  refreshDots();
+}
+
+function refreshDots() {
+  if (!myName) return;
+  const skills = (db[myName]||{}).skills || {};
+  for (const [skill, v] of Object.entries(skills)) {
+    const row = document.querySelector(`.dot-row[data-skill="${skill}"]`);
+    if (!row) continue;
+    row.querySelectorAll('.dot').forEach(d => {
+      const lv = parseInt(d.dataset.lv);
+      d.classList.toggle('filled', lv <= v);
+      d.classList.toggle('active', lv <= v);
+    });
+    const labels = ["","Beginner","Familiar","Proficient","Advanced","Expert"];
+    const lbl = document.getElementById('lbl-'+skill.replace(/[^a-z0-9]/gi,'_'));
+    if (lbl) lbl.textContent = v > 0 ? labels[v] : '';
+  }
+}
+
+function setSkill(skill, val) {
+  if (!myName) return;
+  if (!db[myName]) db[myName] = {};
+  if (!db[myName].skills) db[myName].skills = {};
+
+  // Toggle: clicking same value removes it
+  const current = db[myName].skills[skill] || 0;
+  db[myName].skills[skill] = current === val ? 0 : val;
+
+  refreshDots();
+}
+
+function toggleInterest(el, val) {
+  el.classList.toggle('on');
+}
+
+function saveProfile() {
+  if (!myName) { toast("Select your name first", "error"); return; }
+  if (!cfg.binId) { toast("Configure JSONBin first (⚙ Config)", "error"); return; }
+
+  if (!db[myName]) db[myName] = {};
+
+  // Collect interests
+  const interests = [...document.querySelectorAll('#interestPills .check-pill.on')].map(e=>e.textContent);
+
+  db[myName].avail = {
+    hours:     parseInt(document.getElementById('hrsSlider').value),
+    role:      document.getElementById('roleSelect').value,
+    invest:    document.getElementById('investSelect').value,
+    start:     document.getElementById('startSelect').value,
+    interests,
+    bio:       document.getElementById('bioText').value,
+  };
+  db[myName].updated = new Date().toISOString();
+
+  saveStatus("Saving…", "");
+  pushData().then(() => {
+    saveStatus("✓ Saved & synced", "ok");
+    localStorage.setItem("squadDB", JSON.stringify(db));
+    toast("Profile saved!", "success");
+  }).catch(() => {
+    localStorage.setItem("squadDB", JSON.stringify(db));
+    saveStatus("Saved locally (sync failed — check config)", "err");
+    toast("Saved locally. Check JSONBin config.", "error");
+  });
+}
+
+function saveStatus(msg, cls) {
+  const el = document.getElementById('saveStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'save-status ' + cls;
+}
+
+// ─── JSONBIN I/O ──────────────────────────────────
+async function syncData() {
+  if (!cfg.binId || !cfg.apiKey) { toast("Enter JSONBin credentials in ⚙ Config", "error"); return; }
+  setStatus('syncing');
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binId.trim()}/latest`, {
+      headers: { 'X-Master-Key': cfg.apiKey.trim(), 'X-Bin-Meta': 'false' }
+    });
+    if (!res.ok) {
+      const b = await res.json().catch(()=>({}));
+      throw new Error(`${res.status}: ${b.message||'check Bin ID and Master Key'}`);
+    }
+    const json = await res.json();
+    // Merge remote into local (remote wins for each member key)
+    for (const [k,v] of Object.entries(json)) {
+      if (k !== 'squad') db[k] = v;
+    }
+    localStorage.setItem("squadDB", JSON.stringify(db));
+    setStatus('ok');
+    toast("Synced!", "success");
+  } catch(e) {
+    setStatus('err');
+    toast("Sync failed: " + e.message, "error");
+  }
+}
+
+async function pushData() {
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binId.trim()}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': cfg.apiKey.trim(),
+    },
+    body: JSON.stringify(db)
+  });
+  if (!res.ok) {
+    const b = await res.json().catch(()=>({}));
+    throw new Error(`${res.status}: ${b.message||'check Master Key and Bin ID'}`);
+  }
+}
+
+function setStatus(s) {
+  const d = document.getElementById('statusDot');
+  d.style.background = s==='ok'?'var(--green)':s==='syncing'?'var(--amber)':'var(--red)';
+  d.style.boxShadow  = s==='ok'?'0 0 6px var(--green)':s==='syncing'?'0 0 6px var(--amber)':'0 0 6px var(--red)';
+}
+
+// ─── MATRIX ───────────────────────────────────────
+function renderMatrixFilters() {
+  const cats = ['all', ...Object.keys(SKILL_CATS)];
+  const wrap = document.getElementById('matrixFilters');
+  wrap.innerHTML = cats.map(c => `
+    <div class="cat-filter ${c==='all'&&matrixFilter==='all'?'on':matrixFilter===c?'on':''}"
+         onclick="setMatrixFilter('${c}')">
+      ${c==='all'?'All Skills':c}
+    </div>
+  `).join('');
+}
+
+function setMatrixFilter(cat) {
+  matrixFilter = cat;
+  renderMatrixFilters();
+  renderMatrix();
+}
+
+function renderMatrix() {
+  const skills = matrixFilter === 'all' ? ALL_SKILLS : SKILL_CATS[matrixFilter] || ALL_SKILLS;
+  const container = document.getElementById('matrixContainer');
+
+  const filledMembers = MEMBERS.filter(m => db[m.name] && db[m.name].skills);
+  if (filledMembers.length === 0) {
+    container.innerHTML = `<div class="empty"><span class="em">📋</span>No profiles filled out yet. Members can fill out their profile in "My Profile".</div>`;
+    return;
+  }
+
+  // Group skills by category for the header
+  const catGroups = matrixFilter === 'all'
+    ? Object.entries(SKILL_CATS)
+    : [[matrixFilter, SKILL_CATS[matrixFilter]]];
+
+  let html = `<table class="matrix-table"><thead><tr>
+    <th style="min-width:120px;background:var(--bg2);padding:.5rem .75rem;font-family:var(--display);font-weight:700;font-size:.7rem;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;writing-mode:initial;transform:none">Member</th>`;
+
+  catGroups.forEach(([cat, list]) => {
+    html += `<th class="cat-head" colspan="${list.length}">${cat}</th>`;
+  });
+
+  html += `</tr><tr><th style="background:var(--bg3)"></th>`;
+
+  catGroups.forEach(([cat, list]) => {
+    list.forEach(s => {
+      html += `<th title="${s}">${s}</th>`;
+    });
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  filledMembers.forEach(m => {
+    const mskills = (db[m.name]||{}).skills || {};
+    html += `<tr><td class="member-th">
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <div class="member-avatar" style="background:${m.color}22;color:${m.color};width:24px;height:24px;font-size:.65rem">${m.initials}</div>
+        ${m.name}
+      </div>
+    </td>`;
+    catGroups.forEach(([cat, list]) => {
+      list.forEach(s => {
+        const v = mskills[s] || 0;
+        html += `<td class="matrix-cell" data-v="${v}" title="${m.name} · ${s} · ${["None","Beginner","Familiar","Proficient","Advanced","Expert"][v]}">${v>0?v:''}</td>`;
+      });
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+// ─── OPPORTUNITY ANALYSIS ─────────────────────────
+function renderOpportunity() {
+  const filledMembers = MEMBERS.filter(m => db[m.name] && db[m.name].skills);
+  if (filledMembers.length < 1) {
+    document.getElementById('oppContent').innerHTML = `
+      <div class="empty"><span class="em">📡</span>Complete at least 1 profile to see analysis.</div>`;
+    return;
+  }
+
+  // Aggregate skill averages by category
+  const catAvg = {};
+  for (const [cat, list] of Object.entries(SKILL_CATS)) {
+    let total = 0, count = 0;
+    list.forEach(s => {
+      filledMembers.forEach(m => {
+        const v = ((db[m.name]||{}).skills||{})[s] || 0;
+        if (v > 0) { total += v; count++; }
+      });
+    });
+    catAvg[cat] = count > 0 ? (total / count).toFixed(1) : 0;
+  }
+
+  // Top skills across the whole squad
+  const skillScores = {};
+  ALL_SKILLS.forEach(s => {
+    const vals = filledMembers.map(m => ((db[m.name]||{}).skills||{})[s] || 0);
+    const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+    const expert = vals.filter(v => v >= 4).length;
+    skillScores[s] = { avg, expert, max: Math.max(...vals) };
+  });
+
+  const topSkills = Object.entries(skillScores)
+    .filter(([,v]) => v.avg > 2)
+    .sort((a,b) => b[1].avg - a[1].avg)
+    .slice(0, 12);
+
+  // Availability aggregation
+  const availData = filledMembers.map(m => (db[m.name]||{}).avail||{});
+  const totalHrs = availData.reduce((s,a) => s + (a.hours||0), 0);
+  const investors = availData.filter(a => a.invest === 'Yes').length;
+
+  // Venture ideas based on skill profile
+  const ideas = generateIdeas(skillScores, filledMembers);
+
+  // Render
+  let html = `
+    <div class="opp-grid">
+      <!-- CATEGORY STRENGTHS -->
+      <div class="card">
+        <h3 style="margin-bottom:1rem">Category Strengths</h3>
+        ${Object.entries(catAvg).map(([cat, avg]) => `
+          <div class="strength-bar-wrap">
+            <div class="strength-bar-label">
+              <span>${cat}</span>
+              <span style="color:var(--amber)">${avg}/5</span>
+            </div>
+            <div class="strength-bar-bg">
+              <div class="strength-bar-fill" style="width:${(avg/5)*100}%"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- SQUAD STATS -->
+      <div class="card">
+        <h3 style="margin-bottom:1rem">Squad Stats</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+          <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:10px">
+            <div style="font-family:var(--display);font-weight:800;font-size:2rem;color:var(--amber)">${filledMembers.length}</div>
+            <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em">Profiles Complete</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:10px">
+            <div style="font-family:var(--display);font-weight:800;font-size:2rem;color:var(--teal)">${totalHrs}</div>
+            <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em">hrs/wk available</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:10px">
+            <div style="font-family:var(--display);font-weight:800;font-size:2rem;color:var(--violet)">${investors}</div>
+            <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em">Open to Investing</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:10px">
+            <div style="font-family:var(--display);font-weight:800;font-size:2rem;color:var(--green)">${topSkills.filter(([,v])=>v.max===5).length}</div>
+            <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em">Expert-level Skills</div>
+          </div>
+        </div>
+
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:.75rem">Top Skills by Avg</div>
+        ${topSkills.slice(0,6).map(([s,v]) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:.78rem">${s}</span>
+            <span style="font-size:.72rem;color:var(--amber)">${v.avg.toFixed(1)} avg · ${v.expert} advanced+</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- VENTURE IDEAS -->
+      <div class="card" style="grid-column:1/-1">
+        <h3 style="margin-bottom:.35rem">Potential Ventures</h3>
+        <p style="font-size:.72rem;color:var(--dim);margin-bottom:1.25rem">Generated from your squad's collective skills — ${filledMembers.length}/${MEMBERS.length} profiles complete. More profiles = better analysis.</p>
+        ${ideas.map(idea => `
+          <div class="idea-card">
+            <div class="idea-title">${idea.name}</div>
+            <div style="font-size:.78rem;color:var(--dim);line-height:1.7">${idea.desc}</div>
+            <div class="idea-fit">Squad fit: <strong>${idea.fit}</strong></div>
+            <div class="idea-tags">${idea.tags.map(t=>`<span class="idea-tag">${t}</span>`).join('')}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- MEMBER INTEREST OVERLAP -->
+      <div class="card" style="grid-column:1/-1">
+        <h3 style="margin-bottom:1rem">Member Profiles</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem">
+          ${filledMembers.map(m => {
+            const avail = (db[m.name]||{}).avail || {};
+            const topSkillsM = ALL_SKILLS
+              .map(s => [s, ((db[m.name]||{}).skills||{})[s]||0])
+              .filter(([,v]) => v >= 3)
+              .sort((a,b)=>b[1]-a[1]).slice(0,4);
+            return `
+              <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem">
+                <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem">
+                  <div class="member-avatar" style="background:${m.color}22;color:${m.color}">${m.initials}</div>
+                  <div>
+                    <div style="font-family:var(--display);font-weight:700">${m.name}</div>
+                    <div style="font-size:.65rem;color:var(--dim)">${m.role}</div>
+                  </div>
+                </div>
+                ${topSkillsM.length ? `
+                  <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Top Skills</div>
+                  ${topSkillsM.map(([s,v])=>`
+                    <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:.2rem 0">
+                      <span>${s}</span>
+                      <span style="color:var(--amber)">${['','▪','▪▪','▪▪▪','▪▪▪▪','▪▪▪▪▪'][v]}</span>
+                    </div>`).join('')}
+                ` : '<div style="font-size:.72rem;color:var(--dim)">No proficient skills yet</div>'}
+                ${avail.role ? `<div style="font-size:.68rem;color:var(--teal);margin-top:.6rem">Preferred role: ${avail.role}</div>`:''}
+                ${avail.hours ? `<div style="font-size:.68rem;color:var(--dim)">${avail.hours} hrs/wk · ${avail.invest||'?'} on capital</div>`:''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('oppContent').innerHTML = html;
+}
+
+function generateIdeas(scores, members) {
+  const has = (skill, min=2) => (scores[skill]||{}).avg >= min;
+  const teamHas = (skill, minV=3) => members.some(m => ((db[m.name]||{}).skills||{})[skill] >= minV);
+
+  const ideas = [];
+
+  // Network + Cloud + Telecom
+  if (teamHas("Network Engineering") || teamHas("Cloud Infrastructure") || teamHas("Telecom / RF")) {
+    ideas.push({
+      name: "Network Infrastructure Consulting",
+      desc: "Leverage deep expertise in enterprise networking and telecom to offer boutique consulting for mid-market companies, stadiums, hospitality venues, or smart buildings. High margins, low overhead, expertise-driven.",
+      fit: "Strong — core team skills directly applicable",
+      tags: ["Consulting","B2B","Networking","Telecom","Cloud","Low startup cost"]
+    });
+  }
+
+  // Oil & gas domain + engineering
+  if (teamHas("Oil & Gas") || teamHas("Mechanical Design") || teamHas("Process Engineering")) {
+    ideas.push({
+      name: "Industrial IoT / Asset Monitoring SaaS",
+      desc: "Build a sensor-to-dashboard SaaS for oil & gas or industrial operations — predictive maintenance, remote asset monitoring, compliance tracking. The O&G + mechanical engineering depth gives you rare domain credibility.",
+      fit: "Strong — unique O&G domain knowledge + tech capacity",
+      tags: ["SaaS","IoT","Oil & Gas","Monitoring","Industrial","B2B"]
+    });
+    ideas.push({
+      name: "O&G Technical Consulting Practice",
+      desc: "Productize the mechanical/process engineering expertise into a specialized advisory firm for upstream/midstream operators — FEED studies, process optimization, digital transformation. Immediate revenue potential.",
+      fit: "Strong — two senior mechanical engineers",
+      tags: ["Consulting","Oil & Gas","Engineering","High margin","Services"]
+    });
+  }
+
+  // QA / BA heavy
+  if (teamHas("QA Automation") || teamHas("Business Analysis")) {
+    ideas.push({
+      name: "QA-as-a-Service / Testing Studio",
+      desc: "Offer end-to-end QA services and test automation to startups and SMBs who can't afford full-time QA teams. Mix of offshore execution and senior oversight — a scalable agency model with recurring revenue.",
+      fit: "Strong — QA analysts + BA ready to lead",
+      tags: ["Agency","QA","B2B","Recurring revenue","Remote-first"]
+    });
+  }
+
+  // Software + Cloud
+  if (teamHas("Software Development") || teamHas("Cloud Infrastructure") || teamHas("Web Development")) {
+    ideas.push({
+      name: "Technical Product Studio",
+      desc: "A small dev studio that takes on product contracts for seed/Series A startups — full-stack dev, cloud infra, QA — and potentially equity compensation. Builds toward launching your own product in parallel.",
+      fit: "Moderate — depends on software skill depth",
+      tags: ["Agency → Product","Dev Studio","Equity model","Tech startup"]
+    });
+  }
+
+  // Always include a general one
+  ideas.push({
+    name: "Network & Cloud Training / Certification Prep",
+    desc: "Create online courses and bootcamps for network engineers transitioning to cloud roles (CCNA to AWS, Aruba to Azure Networking). The telecom + cloud combination is a niche with strong demand and low competition.",
+    fit: "Good — expertise-driven, scalable, passive income potential",
+    tags: ["EdTech","Online courses","Passive income","Networking","Cloud","B2C"]
+  });
+
+  // Data/Analytics
+  if (teamHas("Data / Analytics") || teamHas("Database / SQL")) {
+    ideas.push({
+      name: "Data & Analytics Consulting",
+      desc: "Help industrial or enterprise clients build data pipelines, dashboards, and reporting infrastructure. Bridge the gap between operational data (O&G, networking) and business intelligence — a growing need.",
+      fit: "Moderate — grow as more profiles are filled",
+      tags: ["Data","Consulting","BI","Analytics","B2B"]
+    });
+  }
+
+  return ideas.slice(0, 5);
+}
+
+// ─── SETUP MODAL ──────────────────────────────────
+function populateSetupMembers() {
+  const sel = document.getElementById('cfgMyName');
+  MEMBERS.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.name; o.textContent = `${m.name} — ${m.role}`;
+    sel.appendChild(o);
+  });
+}
+
+function openSetup() {
+  setupStep = 1;
+  document.getElementById('cfgBinId').value  = cfg.binId  || '';
+  document.getElementById('cfgApiKey').value = cfg.apiKey || '';
+  document.getElementById('cfgMyName').value = cfg.myName || '';
+  renderSetupModal();
+  document.getElementById('setupModal').classList.remove('hidden');
+}
+
+function renderSetupModal() {
+  const steps = 2;
+  document.getElementById('setupDots').innerHTML =
+    Array.from({length:steps},(_,i)=>`<div class="setup-step-dot ${i<setupStep?'done':''}"></div>`).join('');
+  document.getElementById('step1').classList.toggle('active', setupStep===1);
+  document.getElementById('step2').classList.toggle('active', setupStep===2);
+  document.getElementById('setupBackBtn').style.display = setupStep===1?'none':'inline-flex';
+  document.getElementById('setupNextBtn').textContent = setupStep===steps ? 'Launch →' : 'Continue →';
+}
+
+function setupBack() {
+  if (setupStep > 1) { setupStep--; renderSetupModal(); }
+}
+
+function setupNext() {
+  if (setupStep === 1) {
+    const binId  = document.getElementById('cfgBinId').value.trim();
+    const apiKey = document.getElementById('cfgApiKey').value.trim();
+    if (!binId || !apiKey) { toast("Enter Bin ID and API Key", "error"); return; }
+    cfg.binId = binId; cfg.apiKey = apiKey;
+    setupStep = 2; renderSetupModal();
+  } else if (setupStep === 2) {
+    const name = document.getElementById('cfgMyName').value;
+    if (!name) { toast("Select your name", "error"); return; }
+    cfg.myName = name; myName = name;
+    localStorage.setItem("squadCfg", JSON.stringify(cfg));
+    document.getElementById('setupModal').classList.add('hidden');
+    updateActiveUserBadge();
+    renderMemberBtns();
+    syncData();
+    toast("Config saved! Syncing…", "success");
+  }
+}
+
+function updateActiveUserBadge() {
+  const el = document.getElementById('activeUser');
+  if (myName) { el.textContent = '▸ ' + myName; el.style.display='inline-flex'; }
+  else el.style.display='none';
+}
+
+// ─── TOAST ────────────────────────────────────────
+let toastTimer;
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ─── COPY INIT JSON ───────────────────────────────
+function copyInit() {
+  navigator.clipboard.writeText('{"squad":"skills-matrix","members":{}}').then(() => {
+    const btn = document.getElementById('copyBtn');
+    if (btn) { btn.textContent = '✓ copied'; setTimeout(() => btn.textContent = 'copy', 2000); }
+  });
+}
+
+// ─── KEYBOARD SHORTCUT ────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('setupModal').classList.add('hidden');
+});
+
+</script>
+</body>
+</html>
